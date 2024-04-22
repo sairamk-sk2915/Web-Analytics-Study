@@ -1,0 +1,657 @@
+---
+title: "Web Analytics Study"
+author: "Satya Shiva Sai Ram Kamma"
+date: "2024-04-22"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+<center>
+### [Revenue Optimization Study and Traffic Source Analysis]{.underline }
+</center>
+
+
+#### Project Overview:
+<p>In this project we are going to do detail analysis of revenue optimization strategies and traffic sources using a dataset called (news_website_ddataser.csv). The aim is to use information we gather from data to find ways to make more money and improve where our website visitors are coming from. This helps us make better decisions to increase our overall profits.</p>
+
+#### WHY?
+<p>Understanding what content people like and how to make money from it is super important for digital news sites. By figuring out what articles or topics are popular and how to make the most money from ads or subscriptions, these sites can stay ahead of the competition and keep readers coming back for more. It's all about knowing what works and making smart decisions to stay profitable and relevant in the online news world.</p>
+
+#### WHAT?
+<p>Working on finding ways to make more profits and keep people interested in visiting website. This means we'll try different things like ads section better spots, making articles content better for poor pages, making the website easier to use(pgespeed), and using data to help us make smart choices. By doing all this, we hope to make more profit and keep our audience happy and coming back for more.</p>
+
+#### HOW?
+<p>To reach our goals, we'll use a mix of strategies. This includes conducting thorough market research and audience analysis to understand trends and preferences, implementing targeted marketing campaigns to attract new visitors, optimizing our website for user experience and engagement, testing different revenue models to find the most effective ones, and continuously monitoring and analyzing performance metrics to refine our strategies over time.</p>
+
+<p>Some other factor we can consider to get better results are:</p>
+
+<b>Which time of day across different traffic sources drives the highest number of sessions and conversions?</b>
+
+   <p> 1. Identifying when each traffic source reaches its peak traffic allows us to optimize your website and its resources, such as content scheduling, ad campaign scheduling, and improving the responsiveness and loading speed of the website.
+   
+2. Understanding how the time of day, the source of traffic, and website performance relate to one another allows us to make decisions based on data that improve user experience, maximize resource allocation</p>
+
+<b>Is there a significant correlation between content category and session duration?</b>
+
+<p>1. We can learn what type of content is the most valuable and engaging to the audience by studying how long users spend on various content categories.
+
+2. This information can direct the work we do in creating content, ensuring that we focus on topics that interest users and hold their attention for a longer period of time.
+
+3. Identifying parts on a website where users quickly lose interest and quit can be improved by studying the relationship between content categories and session time. This enables to enhance the user experience, layout, or quality of the content in specific categories.</p>
+    
+<p>Are there any specific landing pages that are particularly successful for different traffic sources or campaigns?<p>
+
+
+####  Find and collect data
+<p>The variables included in this dataset</p>
+    
+    - Time of Day
+    - Traffic Source
+    - Landing Page
+    - Campaign	
+    - Device Category	
+    - Avg Session Duration
+    - Content Category	
+    - Total Sessions	
+    - Conversion Rate	
+    - Total revenue
+    
+#### Dependent Variables
+    - Total Sessions	
+    - Conversion Rate	
+    - Total revenue
+    
+#### Independent Variables
+    - Time of Day
+    - Traffic Source
+    - Landing Page
+    - Campaign	
+    - Device Category	
+    - Avg Session Duration
+    - Content Category	
+
+[View the CSV file](News_Website_Dataset.csv)
+
+#### Data Dictionary
+<p>
+<b>Total Sessions:</b> Total number of unique sessions on the website for a specific timeframe (e.g., Day, Week, Month).
+
+<b>Conversion Rate:</b> Percentage of visitors who complete a desired action (e.g., Polls, Newsletter subscription).
+
+<b>Total Revenue:</b> The total amount generated throughout the sessions.
+
+<b>Time of Day:</b> Categorical variable with 4 levels (Morning, Afternoon, Evening, Night).
+
+<b>Traffic Source:</b> Categorical variable indicating where visitors originated from (e.g., Organic Search, Search, Referral, Direct, Social).
+
+<b>Landing Page:</b> The first page a visitor viewed on your website.
+
+<b>Campaign:</b> Categorical variable indicating which marketing campaign a visitor originated from.
+
+<b>Device Category:</b> Categorical variable indicating the device used to access the website (e.g., Desktop, Mobile, Tablet).
+
+<b>Average Session Duration:</b> The average time spent by visitors on your website per session (continuous).
+
+<b>Content Category:</b> Categorical variable classifying the content type of the visited page (e.g., Article, Category, About Us, Contact Us, Home Page(/)).
+</p>
+
+
+#### Data Collection
+
+```{r}
+#libraries
+library(readxl)
+library(ggplot2)
+library(FactoMineR)
+library(openxlsx)
+library(cluster)
+library(factoextra)
+library(magrittr)
+library(NbClust)
+library(psych)
+library(dplyr)
+library(ROCR)
+library(pROC)
+```
+
+```{r}
+News_Website_Dataset <- read_excel("News Website Dataset_2.xlsx")
+```
+
+```{r}
+orignal_file <- "News Website Dataset_2.xlsx"
+content_convert_to_numeric <- function(category) {
+  category_map <- c("Blog" = 1, "Product" = 2, "Homepage" = 3, "About Us" = 4)
+  return(category_map[category])
+}
+
+News_Website_Dataset$Content_Category_Num <- sapply(News_Website_Dataset$Content_Category, content_convert_to_numeric)
+
+
+Device_Category_convert_to_numeric <- function(Device_Category) {
+  category_map2 <- c("Desktop" = 1, "Mobile" = 2, "Tablet" = 3)
+  return(category_map2[Device_Category])
+}
+
+News_Website_Dataset$Device_Category_Num <- sapply(News_Website_Dataset$Device_Category, Device_Category_convert_to_numeric)
+
+# Append the new column to the Excel file
+write.xlsx(News_Website_Dataset, orignal_file , sheet = "Sheet 1", append = TRUE)
+
+```
+
+```{r}
+head(News_Website_Dataset)   # View the first few rows of the dataset
+summary(News_Website_Dataset)   # Summary statistics for each variable
+str(News_Website_Dataset)   # Structure of the dataset
+```
+<p>Data Cleaning</p>
+```{r}
+is.na(News_Website_Dataset)
+sum(is.na(News_Website_Dataset))
+```
+#### Correltion and Coefficient
+```{r}
+correlation_coefficient <- cor(News_Website_Dataset$Total_revenue, News_Website_Dataset$Conversion_Rate)
+print(correlation_coefficient)
+
+plot(News_Website_Dataset$Conversion_Rate, News_Website_Dataset$Total_revenue,
+     xlab = "Conversion Rate", ylab = "Total Revenue",
+     main = "Scatter Plot of Total Revenue vs. Conversion Rate")
+
+abline(lm(News_Website_Dataset$Total_revenue ~ News_Website_Dataset$Conversion_Rate), col = "red")
+
+print(paste("Correlation Coefficient between Total Revenue and Avg Session Duration:", correlation_coefficient))
+
+# correlation  and coefficient B/W Total_revenue and Total Sessions
+correlation_coefficient2 <- cor(News_Website_Dataset$Total_revenue, News_Website_Dataset$Total_Sessions)
+print(correlation_coefficient2)
+
+plot(News_Website_Dataset$Total_Sessions, News_Website_Dataset$Total_revenue,
+     xlab = "Total Sessions", ylab = "Total Revenue",
+     main = "Scatter Plot of Total Revenue vs. Total Sessions")
+
+abline(lm(News_Website_Dataset$Total_revenue ~ News_Website_Dataset$Total_Sessions), col = "blue")
+```
+
+##### Univariate Analysis
+<p><b>Question :</b>  What is the distribution of total revenue?</p>
+
+<p><b>Visualization:</b> Histogram of Total Revenue</p>
+```{r}
+hist(News_Website_Dataset$Total_revenue, 
+     main = "Distribution of Total Revenue",
+     xlab = "Total Revenue",
+     ylab = "Frequency",
+     col = "lightgreen",
+     border = "black")
+```
+<p>The histogram shows the distribution of total income. It means that most of the income falls in the lower ranges, and is distributed to the right. Small amount increases are considered excessive.</p>
+
+##### Bivariate Analysis:
+<p><b>Question :</b> Is there a relationship between total revenue and average session duration?</p>
+
+<p><b>Visualization:</b> Scatter plot of Total Revenue and Avg Session Duration</p>
+
+```{r}
+ggplot(News_Website_Dataset, aes(x = Avg_Session_Duration, y = Total_revenue)) +
+  geom_point(color = "blue") +
+  labs(title = "Total Revenue and Avg Session Duration",
+       x = "Average Session Duration",
+       y = "Total Revenue")
+
+
+```
+<p>The scatter plot suggests a positive correlation between total revenue and average session duration, as higher revenue tends to coincide with longer session durations.</p>
+
+##### Bivariate Analysis:
+<p><b>Question :</b> How does total revenue vary across different traffic sources?</p>
+
+<p><b>Visualization:</b>  Box plot of Total Revenue by Traffic Source</p>
+
+```{r}
+ggplot(News_Website_Dataset, aes(x = Traffic_Source, y = Total_revenue, fill = Traffic_Source)) +
+  geom_boxplot() +
+  labs(title = "Total Revenue by Traffic Source",
+       x = "Traffic Source",
+       y = "Total Revenue")
+```
+<p>The box plot shows variations in total revenue across different traffic sources, with some sources having higher median revenues compared to others.</p>
+
+##### Multivariate Analysis:
+<p><b>Question :</b>How does total revenue vary across different device categories and time of day?</p>
+
+<p><b>Visualization:</b>  Line plot of Total Revenue by Time of Day, color by Device Category</p>
+
+```{r}
+ggplot(News_Website_Dataset, aes(x = Time_of_Day, y = Total_revenue, color = Device_Category)) +  geom_line(size = 1.5) +
+  labs(title = "Total Revenue by Time of Day (Colored by Device Category)",
+       x = "Time of Day",
+       y = "Total Revenue")
+```
+<p>The line plot illustrates how total revenue varies across different times of the day, with each line representing a different device category. It helps identify revenue trends based on the time of day and device usage.</p>
+
+##### 1. Total Revenue
+<p>Analyzing the univariate mean and variance of the "Total Revenue" variable</p>
+
+```{r}
+mean_revenue <- mean(News_Website_Dataset$Total_revenue)
+variance_revenue <- var(News_Website_Dataset$Total_revenue)
+
+print(paste("Mean for Total Revenue:", mean_revenue))
+print(paste("Variance for Total Revenue:", variance_revenue))
+
+#Box Plot for Total Revenue
+ggplot(News_Website_Dataset, aes(x = "", y = Total_revenue)) +
+  geom_boxplot(fill = "skyblue", color = "black") +
+  labs(title = "Box Plot of Total Revenue", x = "", y = "Total Revenue")
+
+# Q-Q plot for Total Revenue
+qqnorm(News_Website_Dataset$Total_revenue, main = "Q-Q Plot of Total Revenue")
+qqline(News_Website_Dataset$Total_revenue)
+
+
+```
+<p>The mean total revenue provides the average amount of revenue generated across all observations in the dataset. It gives a central measure of the revenue distribution. The variance of total revenue indicates the spread or dispersion of revenue values around the mean. A higher variance suggests that revenue values are more spread out from the mean, while a lower variance suggests that revenue values are closer to the mean. This analysis helps us understand the typical revenue amount and the variability in revenue generation.</p>
+
+##### 2. Total Revenue by Device Category
+<p> Analyzing the mean and variance of Total Revenue across different Device Categories </p>
+```{r}
+mean_revenue_device <- aggregate(Total_revenue ~ Device_Category, data = News_Website_Dataset, mean)
+variance_revenue_device <- aggregate(Total_revenue ~ Device_Category, data = News_Website_Dataset, var)
+
+print("Mean Total Revenue by Device Category")
+print(mean_revenue_device)
+print("Variance of Total Revenue by Device Category")
+print(variance_revenue_device)
+
+# Bar plot for Mean Total Revenue by Device Category
+ggplot(mean_revenue_device, aes(x = Device_Category, y = Total_revenue, fill = Device_Category)) +
+  geom_bar(stat = "identity", position = position_dodge()) +
+  labs(title = "Mean Total Revenue by Device Category", x = "Device Category", y = "Mean Total Revenue") +
+  theme_minimal()
+
+# Violin plot for Distribution of Total Revenue by Device Category
+ggplot(News_Website_Dataset, aes(x = Device_Category, y = Total_revenue, fill = Device_Category)) +
+  geom_violin(trim = FALSE) +
+  labs(title = "Distribution of Total Revenue by Device Category", x = "Device Category", y = "Total Revenue") +
+  theme_minimal()
+
+
+# Box plot for Total Revenue by Device Category
+ggplot(News_Website_Dataset, aes(x = Device_Category, y = Total_revenue, fill = Device_Category)) +
+  geom_boxplot() +
+  labs(title = "Total Revenue by Device Category", x = "Device Category", y = "Total Revenue") +
+  theme_minimal()
+
+```
+<p>This analysis calculates the mean and variance of total revenue for each device category separately. It helps us understand how revenue varies across different device categories. The mean total revenue by device category provides insight into the average revenue generated by users using each type of device. The variance of total revenue by device category shows the variability in revenue generation among users of the same device category. This analysis can help identify which device categories contribute the most to revenue and how consistent revenue generation is across different devices</p>
+
+#### PCA
+
+<p>1 Decide how many Principal Components (PCs) you want to keep and why</p>
+<p>2 Explain the variate representation each PCs</p>
+<p>3 Perform some visualization using PCs.</p>
+
+```{r}
+News_Website_Dataset_num <- read_excel("News Website Dataset_2.xlsx", range = cell_cols("G:L"))
+cor(News_Website_Dataset_num[-1])
+News_Website_Dataset_num_pca <- prcomp(News_Website_Dataset_num[,-1],scale=TRUE)
+News_Website_Dataset_num_pca
+summary(News_Website_Dataset_num_pca)
+
+
+(eigen_News_Website_Dataset <- News_Website_Dataset_num_pca$sdev^2)
+names(eigen_News_Website_Dataset) <- paste("PC",1:4,sep="")
+eigen_News_Website_Dataset
+sumlambdas <- sum(eigen_News_Website_Dataset)
+sumlambdas
+propvar <- eigen_News_Website_Dataset/sumlambdas
+propvar
+
+cumvar_News_Website_Dataset <- cumsum(propvar)
+cumvar_News_Website_Dataset
+matlambdas <- rbind(eigen_News_Website_Dataset,propvar,cumvar_News_Website_Dataset)
+rownames(matlambdas) <- c("Eigenvalues","Prop. variance","Cum. prop. variance")
+round(matlambdas,4)
+summary(News_Website_Dataset_num_pca)
+News_Website_Dataset_num_pca$rotation
+print(News_Website_Dataset_num_pca)
+
+News_Website_Dataset_num_pca$x
+```
+
+```{r}
+encoded_data <- model.matrix(~News_Website_Dataset$Device_Category - 1, data = News_Website_Dataset_num)
+numerical_data <- cbind(News_Website_Dataset_num[, -which(names(News_Website_Dataset_num) == "Device_Category")], encoded_data)
+
+#PCA
+pca_result <- prcomp(numerical_data, scale = TRUE)
+
+# Scree plot
+plot(pca_result$sdev^2, type = "b", xlab = "Principal Component", ylab = "Variance Explained")
+
+loadings <- pca_result$rotation
+print(loadings)
+
+# Data projection onto first two PCs
+data_projection <- as.data.frame(pca_result$x[, 1:2])
+
+
+# Plot
+plot(data_projection$PC1, data_projection$PC2, 
+     xlab = "PC1", ylab = "PC2", 
+     main = "Data Visualization using PCs - 1")
+
+```
+
+#### Clustering
+
+<p>For each model, decide the optimal number of clusters and explain why</p>
+<p>Show the membership for each cluster </p>
+<p>show a visualization of the cluster and membership using the first two Principal Components</p>
+```{r}
+# Load necessary libraries
+library(cluster)
+library(factoextra)
+library(magrittr)
+library(NbClust)
+
+data <- read_excel("News Website Dataset.xlsx")
+
+data_num <- data[, c("Avg_Session_Duration", "Total_Sessions", "Total_revenue")]
+dist_matrix <- dist(data_num)
+
+# Hierarchical clustering
+hclust_model <- hclust(dist_matrix)
+
+plot(hclust_model)
+num_clusters <- 3
+clusters <- cutree(hclust_model, k = num_clusters)
+
+# Membership for each cluster
+table(clusters)
+
+# Visualize cluster and membership using first two Principal Components
+pca_result <- prcomp(data_num, scale = TRUE)
+fviz_cluster(list(data = pca_result$x[, 1:2], cluster = clusters))
+
+# Non-hierarchical clustering (k-means)
+num_clusters <- 2  
+kmeans_model <- kmeans(data_num, centers = num_clusters)
+
+# Membership for each cluster
+table(kmeans_model$cluster)
+
+# Visualize cluster and membership using first two Principal Components
+fviz_cluster(list(data = pca_result$x[, 1:2], cluster = kmeans_model$cluster))
+
+```
+
+```{r}
+# Read the dataset
+data <- read_excel("News Website Dataset_2.xlsx")
+
+# Select numerical variables for clustering
+data_num <- data[, c("Avg_Session_Duration", "Total_Sessions", "Total_revenue")]
+
+# Perform hierarchical clustering
+dist_matrix <- dist(data_num)
+hclust_model <- hclust(dist_matrix)
+
+# Decide on the optimal number of clusters based on the dendrogram
+num_clusters_hclust <- 3  # Replace with chosen number of clusters
+
+# Perform non-hierarchical clustering (k-means)
+num_clusters_kmeans <- 2  # Replace with the chosen number of clusters
+kmeans_model <- kmeans(data_num, centers = num_clusters_kmeans)
+
+# Visualize cluster centers for k-means
+fviz_cluster(kmeans_model, data = data_num, geom = "point", frame.type = "convex", 
+             pointsize = 2, fill = "white", main = "K-means Cluster Centers")
+
+# Visualize cluster and membership using first two Principal Components for k-means
+pca_result <- prcomp(data_num, scale = TRUE)
+fviz_cluster(kmeans_model, data = pca_result$x[, 1:2], geom = "point", 
+             pointsize = 2, fill = "white", main = "K-means Clustering Result (PCA)")
+
+# Calculate silhouette information for k-means clustering
+sil <- silhouette(kmeans_model$cluster, dist(data_num))
+
+# Visualize the silhouette plot for k-means clustering
+fviz_silhouette(sil, main = "Silhouette Plot for K-means Clustering")
+
+# Create a data frame with cluster membership
+data_clustered <- cbind(data_num, Cluster = kmeans_model$cluster)
+
+# Scatter plot of data points colored by cluster membership
+plot(data_clustered$Avg_Session_Duration, data_clustered$Total_Sessions, 
+     col = data_clustered$Cluster, pch = 16, 
+     xlab = "Avg_Session_Duration", ylab = "Total_Sessions",
+     main = "Scatter Plot of Clustering")
+legend("topright", legend = unique(data_clustered$Cluster), 
+       col = 1:num_clusters_kmeans, pch = 16, title = "Cluster")
+
+```
+
+#### Factor Analysis
+<p><b>1. Decide how many Factors are ideal for your dataset</b></p>
+<p>Parallel analysis suggests that the number of factors =  1  and the number of components =  1</p>
+
+<p><b>2. Explain the output for your factor model</b></p>
+<p><b>Standardized Loadings</b></p>
+<p>Avg_Session_Duration has low loadings on all factors, with the highest loading on MR3 (0.32).</p>
+<p>Total_Sessions has the highest loading on MR2 (0.34).</p>
+<p>Total_revenue and Conversion_Rate both have the highest loadings on MR1 (0.48 and 0.50, respectively).</p>
+
+<p><b>SS Loadings</b></p>
+<p>MR1 explains 12% of the total variance., 
+MR2 explains 4% of the total variance., 
+MR3 explains 3% of the total variance.</p>
+
+<p>MR1 might be related to conversion rate and potentially session duration (positive loadings).</p>
+<p>MR2 is positively associated with the total number of sessions.</p>
+<p>MR3 has weaker and mixed relationships with the variables.</p>
+
+<p>we can conclude that a 3-factor solution adequately explains the structure of the data. Each factor captures a unique aspect of the underlying structure, with Total_revenue and Conversion_Rate loading primarily on MR1, Total_Sessions on MR2, and Avg_Session_Duration on MR3.</p>
+
+<p><b> 3&4 Show the columns that go into each factor and Perform some visualizations using the factors</b></p>
+
+```{r}
+data <- read_excel("News Website Dataset_2.xlsx")
+data_num <- data[, c("Avg_Session_Duration", "Total_Sessions", "Total_revenue","Conversion_Rate")]
+factor_model <- fa(data_num, nfactors = 3, rotate = "varimax")
+
+fa.parallel(data_num[-1])
+
+print(factor_model)
+
+factor_loadings <- factor_model$loadings
+print(factor_loadings)
+
+#some visualizations
+fa.plot(factor_model)      # See Correlations within Factors
+fa.diagram(factor_model)   # Visualize the relationship
+```
+
+#### <b>Multiple Regression Analysis</b>
+<p>Multiple regression analysis is a statistical technique that extends simple linear regression by considering the combined effect of two or more independent variables on a single dependent variable. It helps us understand how these independent variables influence the dependent variable,  predict the value of the dependent variable based on the independent ones, and assess the relative importance of each independent variable while accounting for the influence of others. This makes it a powerful tool for various fields like business, finance, and social science to uncover relationships and make predictions.</p>
+
+#### Model Development
+
+<p>We will load the data and convert the data into numerical. we will split the data into training and testing data. then we will perform multiple regression model</p>
+
+#### Model Acceptance 
+<p>Model acceptance involves evaluating the performance of the multiple regression model on unseen data or a testing dataset</p>
+<p>It evaluates the model's performance through coefficient summaries, diagnostic plots, and confidence intervals. Overall, it aims to assess the model's acceptance by analyzing its fit to the data and the significance of predictor variables.</p>
+
+#### Residual Analysis
+<p>Residual analysis is crucial for evaluating the assumptions of the multiple regression model and identifying any patterns or trends in the residuals</p>
+
+<p>It will generate diagnostic plots, including a plot of residuals vs. fitted values, a QQ plot of residuals, and a scale-location plot. These plots can help you assess the assumptions of the multiple regression model.</p>
+```{r}
+mydata <- read_excel("News Website Dataset_2.xlsx")
+data_num <- mydata[, c("Avg_Session_Duration", "Total_Sessions", "Total_revenue","Conversion_Rate")]
+```
+#### Model Development
+```{r}
+model <- lm(Total_revenue ~ Total_Sessions
++ Conversion_Rate + Avg_Session_Duration, data = mydata)
+model_fit <- summary(model)
+print(model_fit)
+```
+<p>In this step, we loaded the dataset and fitted a multiple regression model using the lm() function. The model predicts the Total Revenue based on sTotal Sessions, Conversion Rate and Avg session duration</p>
+
+#### Model Acceptance
+```{r}
+coefficients(model_fit)
+confint(model_fit,level=0.95)
+fitted(model_fit)
+```
+#### Residual Analysis
+```{r}
+library(GGally)
+ggpairs(data=mydata, title="News Website Data")
+plot(model)
+residuals(model_fit)
+```
+
+<p>The residual vs. fitted plot is a tool used to evaluate the assumptions and adequacy of a regression model. It helps to identify whether the model adequately captures the underlying relationships in the data or if there are issues that need to be addressed. The plot shows a pattern of points around zero, the model is not appropriate.</p>
+
+#### Prediction
+<p>The predict() function will generate predicted values of the dependent variable (Total_revenue) based on the provided predictors.</p>
+```{r}
+new_data <- data.frame(Time_of_Day = "Morning",
+                       Traffic_Source = "Organic Search",
+                       Landing_Page = "/blog/new-product",
+                       Campaign = "SEO Campaign",
+                       Content_Category = "Blog",
+                       Device_Category = "Desktop",
+                       Avg_Session_Duration = 4.23,
+                       Total_Sessions = 325,
+                       Conversion_Rate = 0.35)
+
+# Make predictions
+predicted_total_revenue <- predict(model, newdata = new_data)
+predicted_total_revenue
+```
+##### Model Accuracy
+<p>Model accuracy can be assessed using various metrics, such as R-squared, adjusted R-squared, and root mean squared error (RMSE). Here's how you can calculate these metrics</p>
+```{r}
+#Model Accuracy
+rsquared <- summary(model)$r.squared
+cat("R-squared:", rsquared, "\n")
+adjusted_rsquared <- summary(model)$adj.r.squared
+cat("Adjusted R-squared:", adjusted_rsquared, "\n")
+predictions <- predict(model)
+rmse <- sqrt(mean((data$Total_revenue - predictions)^2))
+cat("RMSE:", rmse, "\n")
+```
+
+#### <b>Logistic Regression Analysis</b>
+<p>To perform logistic regression analysis, we will use the glm() function.</p>
+
+* Load all necessary packages 
+* Load Data. we Used read_excel() function to read data from excel
+* Now we will use glm() function to fit a logistic regression model to the data.
+* Now use summary() function for logistic regression model to view coefficients, standard errors, z-values, and p-values.
+* For Residual Analysis use plot() function to get Plot diagnostic plots, including residuals vs. fitted values, QQ plot of residuals, and scale-location plot, to check for homoscedasticity and normality of residuals.
+
+#### Model Development
+```{r}
+mydata <- read_excel("News Website Dataset_2.xlsx")
+```
+
+```{r}
+threshold <- 200
+
+mydata$Revenue_Binary <- ifelse(mydata$Total_revenue > threshold, 1, 0)
+
+logit_model <- glm(Revenue_Binary ~  Total_Sessions
++ Conversion_Rate + Avg_Session_Duration, 
+                    data = mydata, 
+                    family = binomial)
+
+```
+
+<p>The code reads a dataset and preprocesses it to create a binary outcome variable based on a threshold.</p>
+<p>It fits a logistic regression model using three predictor variables: <p>Total_Sessions, Conversion_Rate, and Avg_Session_Duration.</p>
+This model development process involves specifying the model formula, fitting the model to the data, and obtaining a summary of the model's coefficients and statistical significance.</p>
+
+#### Model Acceptance
+```{r}
+summary(logit_model)
+anova(logit_model)
+```
+
+<p>The coefficients represent the estimated effect of each predictor variable on the log-odds of the outcome variable being in the positive class (1).</p>
+
+<p>For example, the coefficient for Total_Sessions is approximately 0.0002231, indicating that for each unit increase in Total_Sessions, the log-odds of the outcome variable being in the positive class increases by 0.0002231 units.</p>
+
+<p>The coefficients for Conversion_Rate and Avg_Session_Duration are 1.1609186 and -0.1110208, respectively.</p>
+
+#### Residual Analysis
+```{r}
+# Residual Analysis
+residuals(logit_model)
+plot(logit_model)
+```
+<p>Function calculates the residuals for the fitted logistic regression model (logit_model). It returns a vector containing the residuals.</p>
+<p>Plot() function generates diagnostic plots for the logistic regression model (logit_model).diagnostic plots including residuals vs. fitted values, quantile-quantile (Q-Q) plot, and leverage plot  </p>
+
+#### Prediction
+```{r}
+predicted_prob <- predict(logit_model, type = "response")
+
+# Create prediction object
+predictions <- prediction(predicted_prob, mydata$Revenue_Binary)
+
+roc_curve <- roc(mydata$Revenue_Binary, predicted_prob)
+
+# Plot ROC curve
+plot(roc_curve, main = "ROC Curve", col = "blue", lwd = 2)
+abline(a = 0, b = 1, lty = 2, col = "red")
+
+# Calculate AUC
+auc_value <- auc(roc_curve)
+cat("AUC:", auc_value, "\n")
+
+# Calculate performance measures
+perf <- performance(predictions, "tpr", "fpr")
+
+# Plot ROC curve
+plot(perf, main = "ROC Curve", col = "blue", lwd = 2)
+abline(a = 0, b = 1, lty = 2, col = "red")
+
+# Plot ROC curve
+plot(perf, main = "ROC Curve", col = "blue", lwd = 2, 
+     xlab = "False Positive Rate", ylab = "True Positive Rate", 
+     xlim = c(0, 1), ylim = c(0, 1))
+abline(a = 0, b = 1, lty = 2, col = "red")  # Diagonal line for reference
+
+# Add AUC value to the plot
+auc_value <- performance(predictions, "auc")@y.values[[1]]
+text(0.5, 0.5, paste("AUC =", round(auc_value, 2)), col = "#4daf4a", lwd=4)
+
+
+# Prediction 
+new_data <- mydata[1:10, ]
+predictions <- predict(logit_model, newdata = new_data, type = "response")
+print(predictions)
+hist(predictions, breaks = 20, col = "lightblue", main = "Histogram of Predicted Probabilities")
+
+```
+
+#### Model Accuracy
+```{r}
+predicted <- predict(logit_model, type = "response")
+predicted_binary <- ifelse(predicted > 0.5, 1, 0)
+confusion <- table(predicted_binary, mydata$Revenue_Binary)
+accuracy <- sum(diag(confusion)) / sum(confusion)
+print(accuracy)
+```
+<p>The code reads a dataset from an Excel file, preprocesses it to create a binary outcome variable based on a threshold, fits a logistic regression model to predict this outcome using three predictor variables, conducts residual analysis, evaluates model performance using ROC curve and calculates AUC, makes predictions for a subset of the data, and assesses model accuracy metrics including accuracy and precision.</p>
+
