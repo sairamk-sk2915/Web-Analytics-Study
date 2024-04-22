@@ -2,7 +2,7 @@
 title: "Web Analytics Study"
 author: "Satya Shiva Sai Ram Kamma"
 date: "2024-04-22"
-output: html_document
+output: github_document
 ---
 
 ```{r setup, include=FALSE}
