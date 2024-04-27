@@ -253,6 +253,23 @@ library(pROC)
     ##     cov, smooth, var
 
 ``` r
+library(dplyr)
+library(DataExplorer)
+```
+
+    ## Warning: package 'DataExplorer' was built under R version 4.3.3
+
+``` r
+library(GGally)
+```
+
+    ## Warning: package 'GGally' was built under R version 4.3.2
+
+    ## Registered S3 method overwritten by 'GGally':
+    ##   method from   
+    ##   +.gg   ggplot2
+
+``` r
 News_Website_Dataset <- read_excel("News Website Dataset_2.xlsx")
 ```
 
@@ -276,6 +293,9 @@ News_Website_Dataset$Device_Category_Num <- sapply(News_Website_Dataset$Device_C
 # Append the new column to the Excel file
 write.xlsx(News_Website_Dataset, orignal_file , sheet = "Sheet 1", append = TRUE)
 ```
+
+    ## Warning in file.create(to[okay]): cannot create file 'News Website
+    ## Dataset_2.xlsx', reason 'Permission denied'
 
 ``` r
 head(News_Website_Dataset)   # View the first few rows of the dataset
@@ -999,6 +1019,68 @@ sum(is.na(News_Website_Dataset))
 
     ## [1] 0
 
+#### EDA
+
+<p>
+The create_report() function in R’s DataExplorer package makes it easier
+to explore datasets by creating a detailed report automatically. It
+summarizes numerical and categorical data, finds missing values,
+identifies outliers, and examines relationships between variables. This
+interactive report helps users understand the dataset’s structure,
+distributions, and any data quality concerns, allowing analysts and data
+scientists to gain insights into important patterns and trends quickly.
+</p>
+
+``` r
+describe(News_Website_Dataset)
+```
+
+    ##                      vars   n   mean     sd median trimmed    mad    min    max
+    ## Time_of_Day*            1 160   2.50   1.12   2.50    2.50   1.48   1.00   4.00
+    ## Traffic_Source*         2 160   3.00   1.42   3.00    3.00   1.48   1.00   5.00
+    ## Landing_Page*           3 160   3.00   1.42   3.00    3.00   1.48   1.00   5.00
+    ## Campaign*               4 160   2.20   1.17   2.00    2.12   1.48   1.00   4.00
+    ## Content_Category*       5 160   2.40   1.02   2.00    2.38   1.48   1.00   4.00
+    ## Device_Category*        6 160   1.80   0.75   2.00    1.75   1.48   1.00   3.00
+    ## Avg_Session_Duration    7 160   3.08   1.20   3.19    3.10   1.52   1.01   4.98
+    ## Total_Sessions          8 160 314.72 117.20 317.23  317.77 149.19 100.91 499.15
+    ## Conversion_Rate         9 160   0.52   0.23   0.54    0.52   0.32   0.11   0.89
+    ## Total_revenue          10 160 167.91  97.91 164.56  166.31 120.76   2.23 346.41
+    ## Content_Category_Num   11 160   2.20   1.17   2.00    2.12   1.48   1.00   4.00
+    ## Device_Category_Num    12 160   1.80   0.75   2.00    1.75   1.48   1.00   3.00
+    ##                       range  skew kurtosis   se
+    ## Time_of_Day*           3.00  0.00    -1.38 0.09
+    ## Traffic_Source*        4.00  0.00    -1.32 0.11
+    ## Landing_Page*          4.00  0.00    -1.32 0.11
+    ## Campaign*              3.00  0.36    -1.39 0.09
+    ## Content_Category*      3.00  0.27    -1.07 0.08
+    ## Device_Category*       2.00  0.34    -1.18 0.06
+    ## Avg_Session_Duration   3.97 -0.08    -1.29 0.09
+    ## Total_Sessions       398.24 -0.17    -1.22 9.27
+    ## Conversion_Rate        0.78 -0.06    -1.22 0.02
+    ## Total_revenue        344.17  0.14    -1.15 7.74
+    ## Content_Category_Num   3.00  0.36    -1.39 0.09
+    ## Device_Category_Num    2.00  0.34    -1.18 0.06
+
+``` r
+create_report(News_Website_Dataset)
+```
+
+    ## 
+    ## 
+    ## processing file: report.rmd
+
+    ##   |                                             |                                     |   0%  |                                             |.                                    |   2%                                   |                                             |..                                   |   5% [global_options]                  |                                             |...                                  |   7%                                   |                                             |....                                 |  10% [introduce]                       |                                             |....                                 |  12%                                   |                                             |.....                                |  14% [plot_intro]                      |                                             |......                               |  17%                                   |                                             |.......                              |  19% [data_structure]                  |                                             |........                             |  21%                                   |                                             |.........                            |  24% [missing_profile]                 |                                             |..........                           |  26%                                   |                                             |...........                          |  29% [univariate_distribution_header]  |                                             |...........                          |  31%                                   |                                             |............                         |  33% [plot_histogram]                  |                                             |.............                        |  36%                                   |                                             |..............                       |  38% [plot_density]                    |                                             |...............                      |  40%                                   |                                             |................                     |  43% [plot_frequency_bar]              |                                             |.................                    |  45%                                   |                                             |..................                   |  48% [plot_response_bar]               |                                             |..................                   |  50%                                   |                                             |...................                  |  52% [plot_with_bar]                   |                                             |....................                 |  55%                                   |                                             |.....................                |  57% [plot_normal_qq]                  |                                             |......................               |  60%                                   |                                             |.......................              |  62% [plot_response_qq]                |                                             |........................             |  64%                                   |                                             |.........................            |  67% [plot_by_qq]                      |                                             |..........................           |  69%                                   |                                             |..........................           |  71% [correlation_analysis]            |                                             |...........................          |  74%                                   |                                             |............................         |  76% [principal_component_analysis]    |                                             |.............................        |  79%                                   |                                             |..............................       |  81% [bivariate_distribution_header]   |                                             |...............................      |  83%                                   |                                             |................................     |  86% [plot_response_boxplot]           |                                             |.................................    |  88%                                   |                                             |.................................    |  90% [plot_by_boxplot]                 |                                             |..................................   |  93%                                   |                                             |...................................  |  95% [plot_response_scatterplot]       |                                             |.................................... |  98%                                   |                                             |.....................................| 100% [plot_by_scatterplot]           
+
+    ## output file: C:/Rutgers/SEM 2/MVA/Web Analytics Study/report.knit.md
+
+    ## "C:/Program Files/RStudio/resources/app/bin/quarto/bin/tools/pandoc" +RTS -K512m -RTS "C:\Rutgers\SEM2~1\MVA\WEBANA~1\REPORT~1.MD" --to html4 --from markdown+autolink_bare_uris+tex_math_single_backslash --output pandoc5edc43e23e01.html --lua-filter "C:\Users\saira\AppData\Local\R\win-library\4.3\rmarkdown\rmarkdown\lua\pagebreak.lua" --lua-filter "C:\Users\saira\AppData\Local\R\win-library\4.3\rmarkdown\rmarkdown\lua\latex-div.lua" --embed-resources --standalone --variable bs3=TRUE --section-divs --table-of-contents --toc-depth 6 --template "C:\Users\saira\AppData\Local\R\win-library\4.3\rmarkdown\rmd\h\default.html" --no-highlight --variable highlightjs=1 --variable theme=yeti --mathjax --variable "mathjax-url=https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" --include-in-header "C:\Users\saira\AppData\Local\Temp\RtmpeIBcSA\rmarkdown-str5edc37b6628f.html"
+
+    ## 
+    ## Output created: report.html
+
+[Click here to view Genetated EDA Report File](report.html)
+
 #### Correltion and Coefficient
 
 ``` r
@@ -1016,7 +1098,7 @@ plot(News_Website_Dataset$Conversion_Rate, News_Website_Dataset$Total_revenue,
 abline(lm(News_Website_Dataset$Total_revenue ~ News_Website_Dataset$Conversion_Rate), col = "red")
 ```
 
-![](Web_Analytics_Study_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
+![](Web_Analytics_Study_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
 
 ``` r
 print(paste("Correlation Coefficient between Total Revenue and Avg Session Duration:", correlation_coefficient))
@@ -1040,7 +1122,7 @@ plot(News_Website_Dataset$Total_Sessions, News_Website_Dataset$Total_revenue,
 abline(lm(News_Website_Dataset$Total_revenue ~ News_Website_Dataset$Total_Sessions), col = "blue")
 ```
 
-![](Web_Analytics_Study_files/figure-gfm/unnamed-chunk-6-2.png)<!-- -->
+![](Web_Analytics_Study_files/figure-gfm/unnamed-chunk-7-2.png)<!-- -->
 
 ##### Univariate Analysis
 
@@ -1060,7 +1142,7 @@ hist(News_Website_Dataset$Total_revenue,
      border = "black")
 ```
 
-![](Web_Analytics_Study_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
+![](Web_Analytics_Study_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
 <p>
 The histogram shows the distribution of total income. It means that most
 of the income falls in the lower ranges, and is distributed to the
@@ -1086,7 +1168,7 @@ ggplot(News_Website_Dataset, aes(x = Avg_Session_Duration, y = Total_revenue)) +
        y = "Total Revenue")
 ```
 
-![](Web_Analytics_Study_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
+![](Web_Analytics_Study_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
 <p>
 The scatter plot suggests a positive correlation between total revenue
 and average session duration, as higher revenue tends to coincide with
@@ -1111,7 +1193,7 @@ ggplot(News_Website_Dataset, aes(x = Traffic_Source, y = Total_revenue, fill = T
        y = "Total Revenue")
 ```
 
-![](Web_Analytics_Study_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
+![](Web_Analytics_Study_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
 <p>
 The box plot shows variations in total revenue across different traffic
 sources, with some sources having higher median revenues compared to
@@ -1142,7 +1224,7 @@ ggplot(News_Website_Dataset, aes(x = Time_of_Day, y = Total_revenue, color = Dev
     ## Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
     ## generated.
 
-![](Web_Analytics_Study_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
+![](Web_Analytics_Study_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
 <p>
 The line plot illustrates how total revenue varies across different
 times of the day, with each line representing a different device
@@ -1179,7 +1261,7 @@ ggplot(News_Website_Dataset, aes(x = "", y = Total_revenue)) +
   labs(title = "Box Plot of Total Revenue", x = "", y = "Total Revenue")
 ```
 
-![](Web_Analytics_Study_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
+![](Web_Analytics_Study_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
 
 ``` r
 # Q-Q plot for Total Revenue
@@ -1187,7 +1269,7 @@ qqnorm(News_Website_Dataset$Total_revenue, main = "Q-Q Plot of Total Revenue")
 qqline(News_Website_Dataset$Total_revenue)
 ```
 
-![](Web_Analytics_Study_files/figure-gfm/unnamed-chunk-11-2.png)<!-- -->
+![](Web_Analytics_Study_files/figure-gfm/unnamed-chunk-12-2.png)<!-- -->
 <p>
 The mean total revenue provides the average amount of revenue generated
 across all observations in the dataset. It gives a central measure of
@@ -1247,7 +1329,7 @@ ggplot(mean_revenue_device, aes(x = Device_Category, y = Total_revenue, fill = D
   theme_minimal()
 ```
 
-![](Web_Analytics_Study_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
+![](Web_Analytics_Study_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
 
 ``` r
 # Violin plot for Distribution of Total Revenue by Device Category
@@ -1257,7 +1339,7 @@ ggplot(News_Website_Dataset, aes(x = Device_Category, y = Total_revenue, fill = 
   theme_minimal()
 ```
 
-![](Web_Analytics_Study_files/figure-gfm/unnamed-chunk-12-2.png)<!-- -->
+![](Web_Analytics_Study_files/figure-gfm/unnamed-chunk-13-2.png)<!-- -->
 
 ``` r
 # Box plot for Total Revenue by Device Category
@@ -1267,7 +1349,7 @@ ggplot(News_Website_Dataset, aes(x = Device_Category, y = Total_revenue, fill = 
   theme_minimal()
 ```
 
-![](Web_Analytics_Study_files/figure-gfm/unnamed-chunk-12-3.png)<!-- -->
+![](Web_Analytics_Study_files/figure-gfm/unnamed-chunk-13-3.png)<!-- -->
 <p>
 This analysis calculates the mean and variance of total revenue for each
 device category separately. It helps us understand how revenue varies
@@ -1279,8 +1361,63 @@ same device category. This analysis can help identify which device
 categories contribute the most to revenue and how consistent revenue
 generation is across different devices
 </p>
+<p>
+<b>Is there any relationship between the time of day, traffic source,
+and total revenue?</b>
+</p>
+<p>
+We can use this analysis to explore how the time of day (morning),
+traffic source (organic search, paid search, referral), and total
+revenue are related. We might find that certain traffic sources are more
+profitable during specific times of the day.
+</p>
 
-#### PCA
+``` r
+# Create a subset of the dataset with relevant variables
+subset_data <- News_Website_Dataset[, c("Time_of_Day", "Traffic_Source", "Total_revenue")]
+
+# Calculate the total revenue for each combination of time of day and traffic source
+revenue_summary <- aggregate(Total_revenue ~ Time_of_Day + Traffic_Source, data = subset_data, FUN = sum)
+
+# Plot the total revenue for each combination of time of day and traffic source
+ggplot(revenue_summary, aes(x = Time_of_Day, y = Total_revenue, fill = Traffic_Source)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(title = "Total Revenue by Time of Day and Traffic Source",
+       x = "Time of Day",
+       y = "Total Revenue",
+       fill = "Traffic Source")
+```
+
+![](Web_Analytics_Study_files/figure-gfm/unnamed-chunk-14-1.png)<!-- -->
+
+<p>
+<b>How do content category, traffic source, and device category interact
+in influencing total revenue?</b>
+</p>
+<p>
+By looking at how different types of content, where the traffic comes
+from, and what devices people use interact with each other, we can
+figure out how they all together affect the total revenue. For example,
+we might learn that certain types of content do better on particular
+devices when people find them through specific ways of getting to our
+site. In essence, we’re trying to see how these different things work
+together to influence the amount of money we make.
+</p>
+
+``` r
+# Stacked bar plot
+ggplot(News_Website_Dataset, aes(x = Content_Category, y = Total_revenue, fill = Traffic_Source)) +
+  geom_bar(stat = "identity", position = "stack") +
+  facet_wrap(~Device_Category) +
+  labs(title = "Total Revenue by Content Category, Traffic Source, and Device Category",
+       x = "Content Category",
+       y = "Total Revenue",
+       fill = "Traffic Source") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+![](Web_Analytics_Study_files/figure-gfm/unnamed-chunk-15-1.png)<!-- -->
+\#### PCA
 
 <p>
 1 Decide how many Principal Components (PCs) you want to keep and why
@@ -1597,7 +1734,7 @@ pca_result <- prcomp(numerical_data, scale = TRUE)
 plot(pca_result$sdev^2, type = "b", xlab = "Principal Component", ylab = "Variance Explained")
 ```
 
-![](Web_Analytics_Study_files/figure-gfm/unnamed-chunk-14-1.png)<!-- -->
+![](Web_Analytics_Study_files/figure-gfm/unnamed-chunk-17-1.png)<!-- -->
 
 ``` r
 loadings <- pca_result$rotation
@@ -1620,7 +1757,7 @@ plot(data_projection$PC1, data_projection$PC2,
      main = "Data Visualization using PCs - 1")
 ```
 
-![](Web_Analytics_Study_files/figure-gfm/unnamed-chunk-14-2.png)<!-- -->
+![](Web_Analytics_Study_files/figure-gfm/unnamed-chunk-17-2.png)<!-- -->
 
 #### Clustering
 
@@ -1653,7 +1790,7 @@ hclust_model <- hclust(dist_matrix)
 plot(hclust_model)
 ```
 
-![](Web_Analytics_Study_files/figure-gfm/unnamed-chunk-15-1.png)<!-- -->
+![](Web_Analytics_Study_files/figure-gfm/unnamed-chunk-18-1.png)<!-- -->
 
 ``` r
 num_clusters <- 3
@@ -1673,7 +1810,7 @@ pca_result <- prcomp(data_num, scale = TRUE)
 fviz_cluster(list(data = pca_result$x[, 1:2], cluster = clusters))
 ```
 
-![](Web_Analytics_Study_files/figure-gfm/unnamed-chunk-15-2.png)<!-- -->
+![](Web_Analytics_Study_files/figure-gfm/unnamed-chunk-18-2.png)<!-- -->
 
 ``` r
 # Non-hierarchical clustering (k-means)
@@ -1686,14 +1823,14 @@ table(kmeans_model$cluster)
 
     ## 
     ##  1  2 
-    ## 12  8
+    ##  4 16
 
 ``` r
 # Visualize cluster and membership using first two Principal Components
 fviz_cluster(list(data = pca_result$x[, 1:2], cluster = kmeans_model$cluster))
 ```
 
-![](Web_Analytics_Study_files/figure-gfm/unnamed-chunk-15-3.png)<!-- -->
+![](Web_Analytics_Study_files/figure-gfm/unnamed-chunk-18-3.png)<!-- -->
 
 ``` r
 # Read the dataset
@@ -1722,7 +1859,7 @@ fviz_cluster(kmeans_model, data = data_num, geom = "point", frame.type = "convex
 
     ## Warning: argument frame.type is deprecated; please use ellipse.type instead.
 
-![](Web_Analytics_Study_files/figure-gfm/unnamed-chunk-16-1.png)<!-- -->
+![](Web_Analytics_Study_files/figure-gfm/unnamed-chunk-19-1.png)<!-- -->
 
 ``` r
 # Visualize cluster and membership using first two Principal Components for k-means
@@ -1731,7 +1868,7 @@ fviz_cluster(kmeans_model, data = pca_result$x[, 1:2], geom = "point",
              pointsize = 2, fill = "white", main = "K-means Clustering Result (PCA)")
 ```
 
-![](Web_Analytics_Study_files/figure-gfm/unnamed-chunk-16-2.png)<!-- -->
+![](Web_Analytics_Study_files/figure-gfm/unnamed-chunk-19-2.png)<!-- -->
 
 ``` r
 # Calculate silhouette information for k-means clustering
@@ -1742,10 +1879,10 @@ fviz_silhouette(sil, main = "Silhouette Plot for K-means Clustering")
 ```
 
     ##   cluster size ave.sil.width
-    ## 1       1   77          0.36
-    ## 2       2   83          0.41
+    ## 1       1   83          0.41
+    ## 2       2   77          0.36
 
-![](Web_Analytics_Study_files/figure-gfm/unnamed-chunk-16-3.png)<!-- -->
+![](Web_Analytics_Study_files/figure-gfm/unnamed-chunk-19-3.png)<!-- -->
 
 ``` r
 # Create a data frame with cluster membership
@@ -1760,7 +1897,81 @@ legend("topright", legend = unique(data_clustered$Cluster),
        col = 1:num_clusters_kmeans, pch = 16, title = "Cluster")
 ```
 
-![](Web_Analytics_Study_files/figure-gfm/unnamed-chunk-16-4.png)<!-- -->
+![](Web_Analytics_Study_files/figure-gfm/unnamed-chunk-19-4.png)<!-- -->
+
+<p>
+<b>How can clustering assist in understanding the distribution of
+features like time of day, traffic source, and total revenue across
+different groups?</b>
+</p>
+<p>
+We will perform clustering on the specified features
+(Avg_Session_Duration, Conversion_Rate, Total_revenue), assign each data
+point to a cluster, and then visualize the distribution of total revenue
+across clusters for different times of the day using boxplots.
+</p>
+
+``` r
+set.seed(123) # for reproducibility
+k <- 3 # number of clusters (you can adjust this)
+clusters <- kmeans(data_num, centers = k)
+
+# Add cluster assignments back to the dataset
+News_Website_Dataset$Cluster <- as.factor(clusters$cluster)
+
+# Visualize the distribution of features across clusters
+ggplot(News_Website_Dataset, aes(x = Time_of_Day, y = Total_revenue, fill = Cluster)) +
+  geom_boxplot() +
+  labs(title = "Distribution of Total Revenue Across Clusters by Time of Day",
+       x = "Time of Day",
+       y = "Total Revenue",
+       fill = "Cluster")
+```
+
+![](Web_Analytics_Study_files/figure-gfm/unnamed-chunk-20-1.png)<!-- -->
+
+``` r
+ggpairs(News_Website_Dataset[, c("Time_of_Day", "Traffic_Source", "Total_revenue", "Cluster")], aes(color = Cluster))
+```
+
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+![](Web_Analytics_Study_files/figure-gfm/unnamed-chunk-20-2.png)<!-- -->
+
+``` r
+ggplot(News_Website_Dataset, aes(x = Time_of_Day, y = Total_revenue, color = Cluster)) +
+  geom_point() +
+  facet_wrap(~Traffic_Source)
+```
+
+![](Web_Analytics_Study_files/figure-gfm/unnamed-chunk-20-3.png)<!-- -->
+
+``` r
+ggplot(News_Website_Dataset, aes(x = Avg_Session_Duration, y = Total_revenue, color = Cluster)) +
+  geom_point() +
+  facet_wrap(~Cluster) +
+  labs(title = "Total Revenue vs. Avg Session Duration by Cluster",
+       x = "Average Session Duration",
+       y = "Total Revenue",
+       color = "Cluster")
+```
+
+![](Web_Analytics_Study_files/figure-gfm/unnamed-chunk-20-4.png)<!-- -->
+
+``` r
+ggplot(News_Website_Dataset, aes(x = Cluster, fill = Traffic_Source)) +
+  geom_bar(position = "fill") +
+  labs(title = "Traffic Source Distribution Across Clusters",
+       x = "Cluster",
+       y = "Proportion",
+       fill = "Traffic Source") +
+  scale_y_continuous(labels = scales::percent_format()) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+![](Web_Analytics_Study_files/figure-gfm/unnamed-chunk-20-5.png)<!-- -->
 
 #### Factor Analysis
 
@@ -1825,9 +2036,9 @@ factor_model <- fa(data_num, nfactors = 3, rotate = "varimax")
 fa.parallel(data_num[-1])
 ```
 
-![](Web_Analytics_Study_files/figure-gfm/unnamed-chunk-17-1.png)<!-- -->
+![](Web_Analytics_Study_files/figure-gfm/unnamed-chunk-21-1.png)<!-- -->
 
-    ## Parallel analysis suggests that the number of factors =  1  and the number of components =  1
+    ## Parallel analysis suggests that the number of factors =  1  and the number of components =  0
 
 ``` r
 print(factor_model)
@@ -1892,13 +2103,13 @@ print(factor_loadings)
 fa.plot(factor_model)      # See Correlations within Factors
 ```
 
-![](Web_Analytics_Study_files/figure-gfm/unnamed-chunk-17-2.png)<!-- -->
+![](Web_Analytics_Study_files/figure-gfm/unnamed-chunk-21-2.png)<!-- -->
 
 ``` r
 fa.diagram(factor_model)   # Visualize the relationship
 ```
 
-![](Web_Analytics_Study_files/figure-gfm/unnamed-chunk-17-3.png)<!-- -->
+![](Web_Analytics_Study_files/figure-gfm/unnamed-chunk-21-3.png)<!-- -->
 
 #### <b>Multiple Regression Analysis</b>
 
@@ -1933,6 +2144,80 @@ It evaluates the model’s performance through coefficient summaries,
 diagnostic plots, and confidence intervals. Overall, it aims to assess
 the model’s acceptance by analyzing its fit to the data and the
 significance of predictor variables.
+</p>
+<p>
+<b>What implications do the findings of Factor Analysis on total revenue
+have for optimizing business strategies or resource allocation?</b>
+</p>
+<p>
+The implications of Factor Analysis findings on total revenue for
+optimizing business strategies or resource allocation, we can use the
+identified latent factors to segment the dataset and analyze how they
+relate to revenue.
+</p>
+
+``` r
+library(GPArotation)
+```
+
+    ## Warning: package 'GPArotation' was built under R version 4.3.3
+
+    ## 
+    ## Attaching package: 'GPArotation'
+
+    ## The following objects are masked from 'package:psych':
+    ## 
+    ##     equamax, varimin
+
+``` r
+# Perform Factor Analysis
+fa_result <- fa(News_Website_Dataset[, c("Avg_Session_Duration", "Conversion_Rate", "Total_revenue")], nfactors = 3)
+
+# Extract factor scores
+factor_scores <- fa_result$scores
+
+
+# Add factor scores to the dataset
+News_Website_Dataset$Factor1 <- factor_scores[, 1]
+News_Website_Dataset$Factor2 <- factor_scores[, 2]
+News_Website_Dataset$Factor3 <- factor_scores[, 3]
+
+# Perform k-means clustering based on the latent factors
+k <- 3 # number of clusters (you can adjust this)
+clusters <- kmeans(News_Website_Dataset[, c("Factor1", "Factor2", "Factor3")], centers = k)
+
+# Add cluster assignments back to the dataset
+News_Website_Dataset$Cluster <- as.factor(clusters$cluster)
+
+# Visualize the clusters and their average total revenue
+fviz_cluster(clusters, data = News_Website_Dataset[, c("Factor1", "Factor2", "Factor3")],
+             geom = "point", stand = FALSE) + 
+  ggtitle("Clusters of Observations based on Latent Factors") +
+  xlab("Factor 1") + ylab("Factor 2") +
+  theme(plot.title = element_text(hjust = 0.5))
+```
+
+![](Web_Analytics_Study_files/figure-gfm/unnamed-chunk-22-1.png)<!-- -->
+
+``` r
+# Calculate the average total revenue for each cluster
+avg_revenue <- aggregate(Total_revenue ~ Cluster, data = News_Website_Dataset, FUN = mean)
+
+# Visualize the average total revenue by cluster
+ggplot(avg_revenue, aes(x = Cluster, y = Total_revenue)) +
+  geom_bar(stat = "identity", fill = "skyblue") +
+  labs(title = "Average Total Revenue by Cluster",
+       x = "Cluster",
+       y = "Average Total Revenue")
+```
+
+![](Web_Analytics_Study_files/figure-gfm/unnamed-chunk-22-2.png)<!-- -->
+<p>
+This analysis can help in optimizing business strategies or resource
+allocation by targeting specific clusters that exhibit higher revenue
+potential or distinct characteristics identified through Factor
+Analysis. Adjustments can be made based on specific business objectives
+and dataset characteristics.
 </p>
 
 #### Residual Analysis
@@ -2019,20 +2304,10 @@ fitted(model_fit)
 
 ``` r
 library(GGally)
-```
-
-    ## Warning: package 'GGally' was built under R version 4.3.2
-
-    ## Registered S3 method overwritten by 'GGally':
-    ##   method from   
-    ##   +.gg   ggplot2
-
-``` r
 ggpairs(data=mydata, title="News Website Data")
 ```
 
     ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
-
     ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
     ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
     ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
@@ -2069,13 +2344,13 @@ ggpairs(data=mydata, title="News Website Data")
     ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
     ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 
-![](Web_Analytics_Study_files/figure-gfm/unnamed-chunk-21-1.png)<!-- -->
+![](Web_Analytics_Study_files/figure-gfm/unnamed-chunk-26-1.png)<!-- -->
 
 ``` r
 plot(model)
 ```
 
-![](Web_Analytics_Study_files/figure-gfm/unnamed-chunk-21-2.png)<!-- -->![](Web_Analytics_Study_files/figure-gfm/unnamed-chunk-21-3.png)<!-- -->![](Web_Analytics_Study_files/figure-gfm/unnamed-chunk-21-4.png)<!-- -->![](Web_Analytics_Study_files/figure-gfm/unnamed-chunk-21-5.png)<!-- -->
+![](Web_Analytics_Study_files/figure-gfm/unnamed-chunk-26-2.png)<!-- -->![](Web_Analytics_Study_files/figure-gfm/unnamed-chunk-26-3.png)<!-- -->![](Web_Analytics_Study_files/figure-gfm/unnamed-chunk-26-4.png)<!-- -->![](Web_Analytics_Study_files/figure-gfm/unnamed-chunk-26-5.png)<!-- -->
 
 ``` r
 residuals(model_fit)
@@ -2368,7 +2643,7 @@ residuals(logit_model)
 plot(logit_model)
 ```
 
-![](Web_Analytics_Study_files/figure-gfm/unnamed-chunk-27-1.png)<!-- -->![](Web_Analytics_Study_files/figure-gfm/unnamed-chunk-27-2.png)<!-- -->![](Web_Analytics_Study_files/figure-gfm/unnamed-chunk-27-3.png)<!-- -->![](Web_Analytics_Study_files/figure-gfm/unnamed-chunk-27-4.png)<!-- -->
+![](Web_Analytics_Study_files/figure-gfm/unnamed-chunk-32-1.png)<!-- -->![](Web_Analytics_Study_files/figure-gfm/unnamed-chunk-32-2.png)<!-- -->![](Web_Analytics_Study_files/figure-gfm/unnamed-chunk-32-3.png)<!-- -->![](Web_Analytics_Study_files/figure-gfm/unnamed-chunk-32-4.png)<!-- -->
 <p>
 Function calculates the residuals for the fitted logistic regression
 model (logit_model). It returns a vector containing the residuals.
@@ -2400,7 +2675,7 @@ plot(roc_curve, main = "ROC Curve", col = "blue", lwd = 2)
 abline(a = 0, b = 1, lty = 2, col = "red")
 ```
 
-![](Web_Analytics_Study_files/figure-gfm/unnamed-chunk-28-1.png)<!-- -->
+![](Web_Analytics_Study_files/figure-gfm/unnamed-chunk-33-1.png)<!-- -->
 
 ``` r
 # Calculate AUC
@@ -2419,7 +2694,7 @@ plot(perf, main = "ROC Curve", col = "blue", lwd = 2)
 abline(a = 0, b = 1, lty = 2, col = "red")
 ```
 
-![](Web_Analytics_Study_files/figure-gfm/unnamed-chunk-28-2.png)<!-- -->
+![](Web_Analytics_Study_files/figure-gfm/unnamed-chunk-33-2.png)<!-- -->
 
 ``` r
 # Plot ROC curve
@@ -2433,7 +2708,7 @@ auc_value <- performance(predictions, "auc")@y.values[[1]]
 text(0.5, 0.5, paste("AUC =", round(auc_value, 2)), col = "#4daf4a", lwd=4)
 ```
 
-![](Web_Analytics_Study_files/figure-gfm/unnamed-chunk-28-3.png)<!-- -->
+![](Web_Analytics_Study_files/figure-gfm/unnamed-chunk-33-3.png)<!-- -->
 
 ``` r
 # Prediction 
@@ -2451,7 +2726,7 @@ print(predictions)
 hist(predictions, breaks = 20, col = "lightblue", main = "Histogram of Predicted Probabilities")
 ```
 
-![](Web_Analytics_Study_files/figure-gfm/unnamed-chunk-28-4.png)<!-- -->
+![](Web_Analytics_Study_files/figure-gfm/unnamed-chunk-33-4.png)<!-- -->
 
 #### Model Accuracy
 
@@ -2473,3 +2748,841 @@ residual analysis, evaluates model performance using ROC curve and
 calculates AUC, makes predictions for a subset of the data, and assesses
 model accuracy metrics including accuracy and precision.
 </p>
+
+### Discriminant Analysis
+
+``` r
+library(MASS)
+```
+
+    ## 
+    ## Attaching package: 'MASS'
+
+    ## The following object is masked from 'package:dplyr':
+    ## 
+    ##     select
+
+``` r
+library(readxl)
+library(ROCR)
+
+mydata <- read_excel("News Website Dataset_2.xlsx")
+mydata$Binary_Content_Category <- ifelse(mydata$Content_Category == "Homepage", 1, 0)
+```
+
+#### Model Development
+
+<p>
+This code trains a model using Linear Discriminant Analysis (LDA) to
+predict the variable called Binary_Content_Category. It uses several
+predictor variables such as Total_Sessions, Conversion_Rate,
+Avg_Session_Duration, Total_revenue, Content_Category_Num, and
+Device_Category_Num to make these predictions.
+</p>
+
+``` r
+lda_model <- lda(Binary_Content_Category ~ Total_Sessions + Conversion_Rate + Avg_Session_Duration + Total_revenue + Content_Category_Num + Device_Category_Num , data = mydata)
+```
+
+#### Model Acceptance
+
+<p>
+The code reviews and accepts the trained Linear Discriminant Analysis
+(LDA) model, labeled as lda_model. Using the summary function, it
+generates an in-depth summary of the model’s parameters, capturing
+details like the prior probabilities for each category, the average
+values for each group, and the coefficients used in the classification
+process. This summary aids in comprehending the model’s properties and
+effectiveness. Additionally, the print function offers a more detailed
+look into the model, presenting additional information such as group
+means, coefficients, and classification rules, which enriches our
+understanding of how the model operates. By leveraging these functions,
+we can thoroughly evaluate and approve the LDA model, ensuring clarity
+and reliability in its application.
+</p>
+
+``` r
+summary(lda_model)
+```
+
+    ##         Length Class  Mode     
+    ## prior    2     -none- numeric  
+    ## counts   2     -none- numeric  
+    ## means   12     -none- numeric  
+    ## scaling  6     -none- numeric  
+    ## lev      2     -none- character
+    ## svd      1     -none- numeric  
+    ## N        1     -none- numeric  
+    ## call     3     -none- call     
+    ## terms    3     terms  call     
+    ## xlevels  0     -none- list
+
+``` r
+print(lda_model)
+```
+
+    ## Call:
+    ## lda(Binary_Content_Category ~ Total_Sessions + Conversion_Rate + 
+    ##     Avg_Session_Duration + Total_revenue + Content_Category_Num + 
+    ##     Device_Category_Num, data = mydata)
+    ## 
+    ## Prior probabilities of groups:
+    ##   0   1 
+    ## 0.8 0.2 
+    ## 
+    ## Group means:
+    ##   Total_Sessions Conversion_Rate Avg_Session_Duration Total_revenue
+    ## 0       319.0393       0.5112183             3.161438      169.0371
+    ## 1       297.4656       0.5387152             2.779094      163.3816
+    ##   Content_Category_Num Device_Category_Num
+    ## 0                    2                   2
+    ## 1                    3                   1
+    ## 
+    ## Coefficients of linear discriminants:
+    ##                                LD1
+    ## Total_Sessions       -0.0010573597
+    ## Conversion_Rate       0.3779084670
+    ## Avg_Session_Duration -0.2177783783
+    ## Total_revenue        -0.0008401038
+    ## Content_Category_Num  0.4438269360
+    ## Device_Category_Num  -1.3390738105
+
+<p>
+The output provides detailed information about different aspects of the
+Linear Discriminant Analysis (LDA) model. It includes essential details
+like the probabilities assigned to each category, the counts of
+observations in each category, the average values of predictor variables
+for each category, and the scaling applied to linear discriminants.
+Additionally, it lists the categories being analyzed, numerical values
+representing the decomposition of predictors, and other relevant
+information such as the total number of observations and the specific
+function and formula used to create the model. Overall, these components
+help in understanding how the model is structured and how it processes
+the data to make predictions.
+</p>
+<p>
+The output summarizes the results of a Linear Discriminant Analysis
+(LDA) model. It shows how the model predicts a specific outcome
+(Binary_Content_Category) using various input factors such as
+Total_Sessions, Conversion_Rate, Avg_Session_Duration, Total_revenue,
+Content_Category_Num, and Device_Category_Num. The summary also includes
+the likelihood of each outcome group (0 and 1) occurring, indicating how
+common each group is in the data. Additionally, it provides the average
+values of the input factors for each outcome group, which can highlight
+potential differences between the groups. Moreover, the coefficients of
+the linear discriminants (LD1) indicate how strongly each input factor
+influences the model’s prediction. Overall, this information helps to
+understand how the model works and which factors play a significant role
+in its decision-making process.
+</p>
+
+#### Residual Analysis
+
+``` r
+plot(lda_model)
+```
+
+![](Web_Analytics_Study_files/figure-gfm/unnamed-chunk-38-1.png)<!-- -->
+
+#### Prediction
+
+``` r
+lda_predictions <- predict(lda_model, newdata = mydata)
+lda_predictions
+```
+
+    ## $class
+    ##   [1] 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0
+    ##  [38] 0 1 0 0 0 0 0 0 0 0 0 1 0 0 0 0 1 0 0 0 0 0 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1
+    ##  [75] 0 0 0 0 1 0 0 0 0 1 0 0 0 0 0 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0
+    ## [112] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0
+    ## [149] 1 0 0 0 0 1 0 0 0 0 0 0
+    ## Levels: 0 1
+    ## 
+    ## $posterior
+    ##             0            1
+    ## 1   0.8986137 0.1013863459
+    ## 2   0.9663790 0.0336210346
+    ## 3   0.9992547 0.0007452620
+    ## 4   0.3862737 0.6137262978
+    ## 5   0.8097760 0.1902239864
+    ## 6   0.8652730 0.1347270073
+    ## 7   0.9595582 0.0404418297
+    ## 8   0.9984858 0.0015141524
+    ## 9   0.3704277 0.6295723395
+    ## 10  0.8158971 0.1841028900
+    ## 11  0.7626272 0.2373728388
+    ## 12  0.9691598 0.0308401914
+    ## 13  0.9980169 0.0019831112
+    ## 14  0.4160541 0.5839459463
+    ## 15  0.7123301 0.2876698973
+    ## 16  0.7424799 0.2575200812
+    ## 17  0.9597806 0.0402194488
+    ## 18  0.9986129 0.0013870629
+    ## 19  0.4489204 0.5510795778
+    ## 20  0.8539020 0.1460979755
+    ## 21  0.6172701 0.3827299288
+    ## 22  0.9558719 0.0441280516
+    ## 23  0.9976261 0.0023738726
+    ## 24  0.4821419 0.5178580898
+    ## 25  0.8787435 0.1212564693
+    ## 26  0.8428009 0.1571991400
+    ## 27  0.9355234 0.0644765920
+    ## 28  0.9988001 0.0011998841
+    ## 29  0.5595332 0.4404668250
+    ## 30  0.8250789 0.1749210820
+    ## 31  0.9412930 0.0587070395
+    ## 32  0.9482058 0.0517942044
+    ## 33  0.9993363 0.0006637395
+    ## 34  0.5316035 0.4683965153
+    ## 35  0.8593713 0.1406286780
+    ## 36  0.8877389 0.1122610937
+    ## 37  0.9873668 0.0126331605
+    ## 38  0.9985352 0.0014647527
+    ## 39  0.4004803 0.5995196926
+    ## 40  0.7264227 0.2735772722
+    ## 41  0.7800990 0.2199010404
+    ## 42  0.9133970 0.0866030184
+    ## 43  0.9966557 0.0033442823
+    ## 44  0.6587353 0.3412647000
+    ## 45  0.7302961 0.2697039203
+    ## 46  0.8920416 0.1079583557
+    ## 47  0.9673724 0.0326275802
+    ## 48  0.9990013 0.0009987431
+    ## 49  0.2034745 0.7965254836
+    ## 50  0.8400398 0.1599602021
+    ## 51  0.6134650 0.3865350303
+    ## 52  0.9561054 0.0438945568
+    ## 53  0.9985138 0.0014861808
+    ## 54  0.2616679 0.7383320607
+    ## 55  0.6117586 0.3882414412
+    ## 56  0.8089045 0.1910955245
+    ## 57  0.9577039 0.0422960655
+    ## 58  0.9988734 0.0011265680
+    ## 59  0.5640881 0.4359118719
+    ## 60  0.8812981 0.1187019417
+    ## 61  0.8937968 0.1062032019
+    ## 62  0.9114563 0.0885436889
+    ## 63  0.9992172 0.0007827762
+    ## 64  0.3611853 0.6388146724
+    ## 65  0.8550416 0.1449584099
+    ## 66  0.6485765 0.3514235419
+    ## 67  0.9310194 0.0689805869
+    ## 68  0.9991838 0.0008161914
+    ## 69  0.1858282 0.8141718291
+    ## 70  0.8606751 0.1393249493
+    ## 71  0.6505887 0.3494113325
+    ## 72  0.9652869 0.0347130973
+    ## 73  0.9987318 0.0012682176
+    ## 74  0.1611759 0.8388240854
+    ## 75  0.9083082 0.0916918345
+    ## 76  0.9015176 0.0984824222
+    ## 77  0.9676845 0.0323154976
+    ## 78  0.9979805 0.0020195311
+    ## 79  0.3552284 0.6447715649
+    ## 80  0.9301006 0.0698993669
+    ## 81  0.7512415 0.2487585370
+    ## 82  0.9369871 0.0630128570
+    ## 83  0.9993202 0.0006797643
+    ## 84  0.4750099 0.5249900716
+    ## 85  0.8813968 0.1186031864
+    ## 86  0.8553252 0.1446748128
+    ## 87  0.9866053 0.0133947371
+    ## 88  0.9992865 0.0007134979
+    ## 89  0.5875081 0.4124918756
+    ## 90  0.7867387 0.2132613244
+    ## 91  0.7702109 0.2297890578
+    ## 92  0.9889770 0.0110230018
+    ## 93  0.9963028 0.0036972103
+    ## 94  0.2807903 0.7192097394
+    ## 95  0.7580998 0.2419001796
+    ## 96  0.9366402 0.0633598192
+    ## 97  0.9774476 0.0225524347
+    ## 98  0.9964054 0.0035946286
+    ## 99  0.3155320 0.6844680057
+    ## 100 0.8584003 0.1415996502
+    ## 101 0.9158733 0.0841267338
+    ## 102 0.9313961 0.0686039283
+    ## 103 0.9962938 0.0037061661
+    ## 104 0.2355194 0.7644806050
+    ## 105 0.7779742 0.2220258237
+    ## 106 0.8369145 0.1630854992
+    ## 107 0.9744557 0.0255443413
+    ## 108 0.9991015 0.0008985211
+    ## 109 0.3611584 0.6388415979
+    ## 110 0.9151685 0.0848314679
+    ## 111 0.7246999 0.2753000915
+    ## 112 0.9765558 0.0234441752
+    ## 113 0.9989989 0.0010011405
+    ## 114 0.5306663 0.4693336872
+    ## 115 0.8554658 0.1445342398
+    ## 116 0.7303192 0.2696808145
+    ## 117 0.9788894 0.0211106004
+    ## 118 0.9980757 0.0019243153
+    ## 119 0.5132059 0.4867940563
+    ## 120 0.7963451 0.2036548810
+    ## 121 0.8834191 0.1165809002
+    ## 122 0.9455176 0.0544824048
+    ## 123 0.9972917 0.0027083355
+    ## 124 0.5860464 0.4139535532
+    ## 125 0.7912205 0.2087794526
+    ## 126 0.8800149 0.1199850640
+    ## 127 0.8591128 0.1408871925
+    ## 128 0.9950080 0.0049919794
+    ## 129 0.4660147 0.5339852679
+    ## 130 0.7605206 0.2394794393
+    ## 131 0.7730220 0.2269779936
+    ## 132 0.9591233 0.0408766757
+    ## 133 0.9987710 0.0012289547
+    ## 134 0.2972974 0.7027025936
+    ## 135 0.7866459 0.2133541069
+    ## 136 0.8428299 0.1571700587
+    ## 137 0.9705611 0.0294388568
+    ## 138 0.9977122 0.0022877754
+    ## 139 0.3635918 0.6364082004
+    ## 140 0.9040895 0.0959104579
+    ## 141 0.7942915 0.2057085393
+    ## 142 0.9746959 0.0253041124
+    ## 143 0.9993711 0.0006288821
+    ## 144 0.2475216 0.7524784209
+    ## 145 0.7700653 0.2299347455
+    ## 146 0.8213012 0.1786987919
+    ## 147 0.9376582 0.0623418276
+    ## 148 0.9984119 0.0015881411
+    ## 149 0.3750210 0.6249789572
+    ## 150 0.7017012 0.2982987521
+    ## 151 0.8399785 0.1600215384
+    ## 152 0.9357992 0.0642008481
+    ## 153 0.9980175 0.0019825166
+    ## 154 0.3071987 0.6928013401
+    ## 155 0.8262735 0.1737264699
+    ## 156 0.7471126 0.2528873653
+    ## 157 0.9813575 0.0186424900
+    ## 158 0.9968723 0.0031277206
+    ## 159 0.6117491 0.3882508613
+    ## 160 0.7743842 0.2256157719
+    ## 
+    ## $x
+    ##             LD1
+    ## 1    0.15339484
+    ## 2   -0.46447009
+    ## 3   -2.48252756
+    ## 4    1.54244420
+    ## 5    0.53853814
+    ## 6    0.32256493
+    ## 7   -0.36374335
+    ## 8   -2.10983847
+    ## 9    1.57783046
+    ## 10   0.51740606
+    ## 11   0.68633247
+    ## 12  -0.51131932
+    ## 13  -1.96789322
+    ## 14   1.47731721
+    ## 15   0.82309344
+    ## 16   0.74317712
+    ## 17  -0.36676085
+    ## 18  -2.15594617
+    ## 19   1.40696471
+    ## 20   0.37206573
+    ## 21   1.04826338
+    ## 22  -0.31591024
+    ## 23  -1.87323152
+    ## 24   1.33681642
+    ## 25   0.25912846
+    ## 26   0.41739988
+    ## 27  -0.10545911
+    ## 28  -2.23217606
+    ## 29   1.17362800
+    ## 30   0.48466094
+    ## 31  -0.15791947
+    ## 32  -0.22755713
+    ## 33  -2.54341009
+    ## 34   1.23280754
+    ## 35   0.34867479
+    ## 36   0.21329884
+    ## 37  -0.98981091
+    ## 38  -2.12728427
+    ## 39   1.51117588
+    ## 40   0.78642549
+    ## 41   0.63428432
+    ## 42   0.06205548
+    ## 43  -1.69272685
+    ## 44   0.95389630
+    ## 45   0.77614396
+    ## 46   0.19023468
+    ## 47  -0.48076183
+    ## 48  -2.32864265
+    ## 49   2.01600424
+    ## 50   0.42826741
+    ## 51   1.05670633
+    ## 52  -0.31882476
+    ## 53  -2.11964576
+    ## 54   1.84406085
+    ## 55   1.06048255
+    ## 56   0.54150435
+    ## 57  -0.33918415
+    ## 58  -2.26532655
+    ## 59   1.16391080
+    ## 60   0.24642179
+    ## 61   0.18059404
+    ## 62   0.07481116
+    ## 63  -2.45671587
+    ## 64   1.59875382
+    ## 65   0.36725288
+    ## 66   0.97746394
+    ## 67  -0.06746314
+    ## 68  -2.43474483
+    ## 69   2.07515524
+    ## 70   0.34298718
+    ## 71   0.97282136
+    ## 72  -0.44708891
+    ## 73  -2.20305192
+    ## 74   2.16556737
+    ## 75   0.09497648
+    ## 76   0.13643861
+    ## 77  -0.48597872
+    ## 78  -1.95831668
+    ## 79   1.61236212
+    ## 80  -0.05999575
+    ## 81   0.71883711
+    ## 82  -0.11834004
+    ## 83  -2.53087282
+    ## 84   1.35182644
+    ## 85   0.24592583
+    ## 86   0.36605026
+    ## 87  -0.95866354
+    ## 88  -2.50541902
+    ## 89   1.11354469
+    ## 90   0.61373168
+    ## 91   0.66408310
+    ## 92  -1.06226977
+    ## 93  -1.63985172
+    ## 94   1.79323826
+    ## 95   0.69938169
+    ## 96  -0.11526173
+    ## 97  -0.68015886
+    ## 98  -1.65468315
+    ## 99   1.70597319
+    ## 100  0.35288213
+    ## 101  0.04539809
+    ## 102 -0.07055108
+    ## 103 -1.63857639
+    ## 104  1.91763077
+    ## 105  0.64076685
+    ## 106  0.44038686
+    ## 107 -0.61312612
+    ## 108 -2.38423143
+    ## 109  1.59881511
+    ## 110  0.05018346
+    ## 111  0.79096937
+    ## 112 -0.65931366
+    ## 113 -2.32738224
+    ## 114  1.23478393
+    ## 115  0.36545342
+    ## 116  0.77608235
+    ## 117 -0.71563022
+    ## 118 -1.98373025
+    ## 119  1.27153756
+    ## 120  0.58315169
+    ## 121  0.23569030
+    ## 122 -0.19949242
+    ## 123 -1.80383102
+    ## 124  1.11671061
+    ## 125  0.59959368
+    ## 126  0.25283347
+    ## 127  0.34979733
+    ## 128 -1.48148236
+    ## 129  1.37078918
+    ## 130  0.69242537
+    ## 131  0.65570560
+    ## 132 -0.35788854
+    ## 133 -2.21958857
+    ## 134  1.75104330
+    ## 135  0.61402206
+    ## 136  0.41728460
+    ## 137 -0.53650059
+    ## 138 -1.89267829
+    ## 139  1.59328420
+    ## 140  0.12104468
+    ## 141  0.58977715
+    ## 142 -0.61821792
+    ## 143 -2.57175959
+    ## 144  1.88321655
+    ## 145  0.66451531
+    ## 146  0.49829236
+    ## 147 -0.12433866
+    ## 148 -2.08474420
+    ## 149  1.56751245
+    ## 150  0.85004318
+    ## 151  0.42850709
+    ## 152 -0.10786469
+    ## 153 -1.96805102
+    ## 154  1.72638515
+    ## 155  0.48030213
+    ## 156  0.73037665
+    ## 157 -0.78224894
+    ## 158 -1.72800028
+    ## 159  1.06050338
+    ## 160  0.65161957
+
+``` r
+predicted_classes <- lda_predictions$class
+predicted_classes
+```
+
+    ##   [1] 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0
+    ##  [38] 0 1 0 0 0 0 0 0 0 0 0 1 0 0 0 0 1 0 0 0 0 0 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1
+    ##  [75] 0 0 0 0 1 0 0 0 0 1 0 0 0 0 0 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0
+    ## [112] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0
+    ## [149] 1 0 0 0 0 1 0 0 0 0 0 0
+    ## Levels: 0 1
+
+``` r
+lda_predictions$x
+```
+
+    ##             LD1
+    ## 1    0.15339484
+    ## 2   -0.46447009
+    ## 3   -2.48252756
+    ## 4    1.54244420
+    ## 5    0.53853814
+    ## 6    0.32256493
+    ## 7   -0.36374335
+    ## 8   -2.10983847
+    ## 9    1.57783046
+    ## 10   0.51740606
+    ## 11   0.68633247
+    ## 12  -0.51131932
+    ## 13  -1.96789322
+    ## 14   1.47731721
+    ## 15   0.82309344
+    ## 16   0.74317712
+    ## 17  -0.36676085
+    ## 18  -2.15594617
+    ## 19   1.40696471
+    ## 20   0.37206573
+    ## 21   1.04826338
+    ## 22  -0.31591024
+    ## 23  -1.87323152
+    ## 24   1.33681642
+    ## 25   0.25912846
+    ## 26   0.41739988
+    ## 27  -0.10545911
+    ## 28  -2.23217606
+    ## 29   1.17362800
+    ## 30   0.48466094
+    ## 31  -0.15791947
+    ## 32  -0.22755713
+    ## 33  -2.54341009
+    ## 34   1.23280754
+    ## 35   0.34867479
+    ## 36   0.21329884
+    ## 37  -0.98981091
+    ## 38  -2.12728427
+    ## 39   1.51117588
+    ## 40   0.78642549
+    ## 41   0.63428432
+    ## 42   0.06205548
+    ## 43  -1.69272685
+    ## 44   0.95389630
+    ## 45   0.77614396
+    ## 46   0.19023468
+    ## 47  -0.48076183
+    ## 48  -2.32864265
+    ## 49   2.01600424
+    ## 50   0.42826741
+    ## 51   1.05670633
+    ## 52  -0.31882476
+    ## 53  -2.11964576
+    ## 54   1.84406085
+    ## 55   1.06048255
+    ## 56   0.54150435
+    ## 57  -0.33918415
+    ## 58  -2.26532655
+    ## 59   1.16391080
+    ## 60   0.24642179
+    ## 61   0.18059404
+    ## 62   0.07481116
+    ## 63  -2.45671587
+    ## 64   1.59875382
+    ## 65   0.36725288
+    ## 66   0.97746394
+    ## 67  -0.06746314
+    ## 68  -2.43474483
+    ## 69   2.07515524
+    ## 70   0.34298718
+    ## 71   0.97282136
+    ## 72  -0.44708891
+    ## 73  -2.20305192
+    ## 74   2.16556737
+    ## 75   0.09497648
+    ## 76   0.13643861
+    ## 77  -0.48597872
+    ## 78  -1.95831668
+    ## 79   1.61236212
+    ## 80  -0.05999575
+    ## 81   0.71883711
+    ## 82  -0.11834004
+    ## 83  -2.53087282
+    ## 84   1.35182644
+    ## 85   0.24592583
+    ## 86   0.36605026
+    ## 87  -0.95866354
+    ## 88  -2.50541902
+    ## 89   1.11354469
+    ## 90   0.61373168
+    ## 91   0.66408310
+    ## 92  -1.06226977
+    ## 93  -1.63985172
+    ## 94   1.79323826
+    ## 95   0.69938169
+    ## 96  -0.11526173
+    ## 97  -0.68015886
+    ## 98  -1.65468315
+    ## 99   1.70597319
+    ## 100  0.35288213
+    ## 101  0.04539809
+    ## 102 -0.07055108
+    ## 103 -1.63857639
+    ## 104  1.91763077
+    ## 105  0.64076685
+    ## 106  0.44038686
+    ## 107 -0.61312612
+    ## 108 -2.38423143
+    ## 109  1.59881511
+    ## 110  0.05018346
+    ## 111  0.79096937
+    ## 112 -0.65931366
+    ## 113 -2.32738224
+    ## 114  1.23478393
+    ## 115  0.36545342
+    ## 116  0.77608235
+    ## 117 -0.71563022
+    ## 118 -1.98373025
+    ## 119  1.27153756
+    ## 120  0.58315169
+    ## 121  0.23569030
+    ## 122 -0.19949242
+    ## 123 -1.80383102
+    ## 124  1.11671061
+    ## 125  0.59959368
+    ## 126  0.25283347
+    ## 127  0.34979733
+    ## 128 -1.48148236
+    ## 129  1.37078918
+    ## 130  0.69242537
+    ## 131  0.65570560
+    ## 132 -0.35788854
+    ## 133 -2.21958857
+    ## 134  1.75104330
+    ## 135  0.61402206
+    ## 136  0.41728460
+    ## 137 -0.53650059
+    ## 138 -1.89267829
+    ## 139  1.59328420
+    ## 140  0.12104468
+    ## 141  0.58977715
+    ## 142 -0.61821792
+    ## 143 -2.57175959
+    ## 144  1.88321655
+    ## 145  0.66451531
+    ## 146  0.49829236
+    ## 147 -0.12433866
+    ## 148 -2.08474420
+    ## 149  1.56751245
+    ## 150  0.85004318
+    ## 151  0.42850709
+    ## 152 -0.10786469
+    ## 153 -1.96805102
+    ## 154  1.72638515
+    ## 155  0.48030213
+    ## 156  0.73037665
+    ## 157 -0.78224894
+    ## 158 -1.72800028
+    ## 159  1.06050338
+    ## 160  0.65161957
+
+``` r
+predicted_probabilities <- as.data.frame(lda_predictions$posterior)
+predicted_probabilities
+```
+
+    ##             0            1
+    ## 1   0.8986137 0.1013863459
+    ## 2   0.9663790 0.0336210346
+    ## 3   0.9992547 0.0007452620
+    ## 4   0.3862737 0.6137262978
+    ## 5   0.8097760 0.1902239864
+    ## 6   0.8652730 0.1347270073
+    ## 7   0.9595582 0.0404418297
+    ## 8   0.9984858 0.0015141524
+    ## 9   0.3704277 0.6295723395
+    ## 10  0.8158971 0.1841028900
+    ## 11  0.7626272 0.2373728388
+    ## 12  0.9691598 0.0308401914
+    ## 13  0.9980169 0.0019831112
+    ## 14  0.4160541 0.5839459463
+    ## 15  0.7123301 0.2876698973
+    ## 16  0.7424799 0.2575200812
+    ## 17  0.9597806 0.0402194488
+    ## 18  0.9986129 0.0013870629
+    ## 19  0.4489204 0.5510795778
+    ## 20  0.8539020 0.1460979755
+    ## 21  0.6172701 0.3827299288
+    ## 22  0.9558719 0.0441280516
+    ## 23  0.9976261 0.0023738726
+    ## 24  0.4821419 0.5178580898
+    ## 25  0.8787435 0.1212564693
+    ## 26  0.8428009 0.1571991400
+    ## 27  0.9355234 0.0644765920
+    ## 28  0.9988001 0.0011998841
+    ## 29  0.5595332 0.4404668250
+    ## 30  0.8250789 0.1749210820
+    ## 31  0.9412930 0.0587070395
+    ## 32  0.9482058 0.0517942044
+    ## 33  0.9993363 0.0006637395
+    ## 34  0.5316035 0.4683965153
+    ## 35  0.8593713 0.1406286780
+    ## 36  0.8877389 0.1122610937
+    ## 37  0.9873668 0.0126331605
+    ## 38  0.9985352 0.0014647527
+    ## 39  0.4004803 0.5995196926
+    ## 40  0.7264227 0.2735772722
+    ## 41  0.7800990 0.2199010404
+    ## 42  0.9133970 0.0866030184
+    ## 43  0.9966557 0.0033442823
+    ## 44  0.6587353 0.3412647000
+    ## 45  0.7302961 0.2697039203
+    ## 46  0.8920416 0.1079583557
+    ## 47  0.9673724 0.0326275802
+    ## 48  0.9990013 0.0009987431
+    ## 49  0.2034745 0.7965254836
+    ## 50  0.8400398 0.1599602021
+    ## 51  0.6134650 0.3865350303
+    ## 52  0.9561054 0.0438945568
+    ## 53  0.9985138 0.0014861808
+    ## 54  0.2616679 0.7383320607
+    ## 55  0.6117586 0.3882414412
+    ## 56  0.8089045 0.1910955245
+    ## 57  0.9577039 0.0422960655
+    ## 58  0.9988734 0.0011265680
+    ## 59  0.5640881 0.4359118719
+    ## 60  0.8812981 0.1187019417
+    ## 61  0.8937968 0.1062032019
+    ## 62  0.9114563 0.0885436889
+    ## 63  0.9992172 0.0007827762
+    ## 64  0.3611853 0.6388146724
+    ## 65  0.8550416 0.1449584099
+    ## 66  0.6485765 0.3514235419
+    ## 67  0.9310194 0.0689805869
+    ## 68  0.9991838 0.0008161914
+    ## 69  0.1858282 0.8141718291
+    ## 70  0.8606751 0.1393249493
+    ## 71  0.6505887 0.3494113325
+    ## 72  0.9652869 0.0347130973
+    ## 73  0.9987318 0.0012682176
+    ## 74  0.1611759 0.8388240854
+    ## 75  0.9083082 0.0916918345
+    ## 76  0.9015176 0.0984824222
+    ## 77  0.9676845 0.0323154976
+    ## 78  0.9979805 0.0020195311
+    ## 79  0.3552284 0.6447715649
+    ## 80  0.9301006 0.0698993669
+    ## 81  0.7512415 0.2487585370
+    ## 82  0.9369871 0.0630128570
+    ## 83  0.9993202 0.0006797643
+    ## 84  0.4750099 0.5249900716
+    ## 85  0.8813968 0.1186031864
+    ## 86  0.8553252 0.1446748128
+    ## 87  0.9866053 0.0133947371
+    ## 88  0.9992865 0.0007134979
+    ## 89  0.5875081 0.4124918756
+    ## 90  0.7867387 0.2132613244
+    ## 91  0.7702109 0.2297890578
+    ## 92  0.9889770 0.0110230018
+    ## 93  0.9963028 0.0036972103
+    ## 94  0.2807903 0.7192097394
+    ## 95  0.7580998 0.2419001796
+    ## 96  0.9366402 0.0633598192
+    ## 97  0.9774476 0.0225524347
+    ## 98  0.9964054 0.0035946286
+    ## 99  0.3155320 0.6844680057
+    ## 100 0.8584003 0.1415996502
+    ## 101 0.9158733 0.0841267338
+    ## 102 0.9313961 0.0686039283
+    ## 103 0.9962938 0.0037061661
+    ## 104 0.2355194 0.7644806050
+    ## 105 0.7779742 0.2220258237
+    ## 106 0.8369145 0.1630854992
+    ## 107 0.9744557 0.0255443413
+    ## 108 0.9991015 0.0008985211
+    ## 109 0.3611584 0.6388415979
+    ## 110 0.9151685 0.0848314679
+    ## 111 0.7246999 0.2753000915
+    ## 112 0.9765558 0.0234441752
+    ## 113 0.9989989 0.0010011405
+    ## 114 0.5306663 0.4693336872
+    ## 115 0.8554658 0.1445342398
+    ## 116 0.7303192 0.2696808145
+    ## 117 0.9788894 0.0211106004
+    ## 118 0.9980757 0.0019243153
+    ## 119 0.5132059 0.4867940563
+    ## 120 0.7963451 0.2036548810
+    ## 121 0.8834191 0.1165809002
+    ## 122 0.9455176 0.0544824048
+    ## 123 0.9972917 0.0027083355
+    ## 124 0.5860464 0.4139535532
+    ## 125 0.7912205 0.2087794526
+    ## 126 0.8800149 0.1199850640
+    ## 127 0.8591128 0.1408871925
+    ## 128 0.9950080 0.0049919794
+    ## 129 0.4660147 0.5339852679
+    ## 130 0.7605206 0.2394794393
+    ## 131 0.7730220 0.2269779936
+    ## 132 0.9591233 0.0408766757
+    ## 133 0.9987710 0.0012289547
+    ## 134 0.2972974 0.7027025936
+    ## 135 0.7866459 0.2133541069
+    ## 136 0.8428299 0.1571700587
+    ## 137 0.9705611 0.0294388568
+    ## 138 0.9977122 0.0022877754
+    ## 139 0.3635918 0.6364082004
+    ## 140 0.9040895 0.0959104579
+    ## 141 0.7942915 0.2057085393
+    ## 142 0.9746959 0.0253041124
+    ## 143 0.9993711 0.0006288821
+    ## 144 0.2475216 0.7524784209
+    ## 145 0.7700653 0.2299347455
+    ## 146 0.8213012 0.1786987919
+    ## 147 0.9376582 0.0623418276
+    ## 148 0.9984119 0.0015881411
+    ## 149 0.3750210 0.6249789572
+    ## 150 0.7017012 0.2982987521
+    ## 151 0.8399785 0.1600215384
+    ## 152 0.9357992 0.0642008481
+    ## 153 0.9980175 0.0019825166
+    ## 154 0.3071987 0.6928013401
+    ## 155 0.8262735 0.1737264699
+    ## 156 0.7471126 0.2528873653
+    ## 157 0.9813575 0.0186424900
+    ## 158 0.9968723 0.0031277206
+    ## 159 0.6117491 0.3882508613
+    ## 160 0.7743842 0.2256157719
+
+``` r
+pred <- prediction(predicted_probabilities[,2], mydata$Binary_Content_Category)
+```
+
+#### Model Accuracy
+
+``` r
+roc.perf = performance(pred, measure = "tpr", x.measure = "fpr")
+auc.train <- performance(pred, measure = "auc")
+auc.train <- auc.train@y.values
+plot(roc.perf, main = "ROC Curve", col = "blue", lwd = 2)
+abline(a = 0, b = 1, lty = 2, col = "red")
+text(x = .25, y = .65 ,paste("AUC = ", round(auc.train[[1]],3), sep = ""))
+```
+
+![](Web_Analytics_Study_files/figure-gfm/unnamed-chunk-40-1.png)<!-- -->
